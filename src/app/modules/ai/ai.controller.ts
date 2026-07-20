@@ -2,6 +2,7 @@ import { OpenAI } from "openai";
 import type { Request, Response } from "express";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import { db } from "../../db/mongodb.js";
 dotenv.config();
 
 const openai = new OpenAI({
@@ -169,53 +170,61 @@ export const recommendations = async (req: Request, res: Response) => {
   try {
     const { interests, category, level, budget } = req.query;
 
-    const prompt = `You are a course recommendation engine. Based on the following user preferences, recommend 4 relevant courses and provide a personalized AI insight.
+    const filter: Record<string, unknown> = {};
+    if (category) filter.category = category;
+    if (level) filter.level = level;
+    if (budget) filter.price = { $lte: parseFloat(budget as string) };
 
-User interests: ${interests || "general technology"}
-Preferred category: ${category || "any"}
-Preferred level: ${level || "any"}
-Max budget: ${budget || "no limit"}
+    const userInterests = interests
+      ? (interests as string).split(",").filter(Boolean)
+      : [];
 
-Respond with valid JSON only, exactly matching this structure — no markdown, no explanation outside the JSON:
-{
-  "recommendations": [
-    {
-      "_id": "rec-1",
-      "title": "Course Title",
-      "shortDescription": "Brief description",
-      "fullDescription": "Detailed description",
-      "price": 49.99,
-      "category": "Category name",
-      "level": "Beginner",
-      "duration": "8 weeks",
-      "rating": 4.5,
-      "reviewCount": 120,
-      "instructor": "Instructor name",
-      "courseImage": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400",
-      "images": "",
-      "location": "Online",
-      "tags": ["tag1", "tag2"],
-      "createdAt": "2025-01-01T00:00:00.000Z"
+    if (userInterests.length > 0) {
+      filter.$or = [
+        { category: { $in: userInterests } },
+        { tags: { $in: userInterests } },
+      ];
     }
-  ],
-  "aiInsight": "A brief personalized insight explaining why these courses match the user's profile..."
-}`;
 
-    const completion = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    });
+    let courses = await db
+      .collection("courses")
+      .find(filter)
+      .sort({ rating: -1 })
+      .limit(4)
+      .toArray();
 
-    const raw = completion.choices[0]?.message?.content || "{}";
-    const parsed = JSON.parse(raw);
+    let aiInsight = "";
 
-    res.json({
-      recommendations: parsed.recommendations || [],
-      aiInsight:
-        parsed.aiInsight ||
-        "Based on your interests, we've curated these recommendations to help you grow.",
-    });
+    if (courses.length > 0) {
+      const courseList = courses
+        .map(
+          (c: Record<string, unknown>) =>
+            `- ${c.title} (${c.category}, ${c.level}, $${c.price})`
+        )
+        .join("\n");
+
+      try {
+        const completion = await openai.chat.completions.create({
+          model: MODEL,
+          messages: [
+            {
+              role: "user",
+              content: `User interests: ${userInterests.join(", ") || "technology"}\nAvailable courses:\n${courseList}\n\nProvide a 2-3 sentence personalized learning recommendation explaining why these courses match their goals.`,
+            },
+          ],
+          max_tokens: 200,
+        });
+        aiInsight =
+          completion.choices[0]?.message?.content ||
+          `Based on your ${userInterests.join(", ") || "selected"} preferences, here are the top courses that match your interests.`;
+      } catch {
+        aiInsight = `Based on your ${userInterests.join(", ") || "selected"} preferences, here are the top-rated courses that match your interests.`;
+      }
+    } else {
+      aiInsight = "No courses match your current filters. Try adjusting your preferences above.";
+    }
+
+    res.json({ recommendations: courses, aiInsight });
   } catch (error) {
     console.error("AI Recommendations Error:", error);
     res.status(500).json({ error: "Failed to fetch recommendations" });

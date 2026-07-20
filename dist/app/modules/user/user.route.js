@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const user_controller_js_1 = require("./user.controller.js");
+const verifyJWT_js_1 = require("../../middlewares/verifyJWT.js");
+const router = (0, express_1.Router)();
+router.get("/", user_controller_js_1.getUsers);
+router.get("/courses", user_controller_js_1.getCoursesList);
+router.get("/courses/categories", user_controller_js_1.getCategories);
+router.get("/courses/stats", user_controller_js_1.getStats);
+router.post("/courses", verifyJWT_js_1.VerifyJWT, user_controller_js_1.postSkillForgeData);
+router.get("/courses/my/:id", verifyJWT_js_1.VerifyJWT, user_controller_js_1.GetUserAllData);
+router.get("/courses/:id", user_controller_js_1.GetSingleCourseData);
+router.delete("/courses/:id", verifyJWT_js_1.VerifyJWT, user_controller_js_1.DeleteSingleCourseData);
+router.get("/blogs", user_controller_js_1.getBlogsList);
+router.get("/blogs/:slug", user_controller_js_1.getSingleBlogPost);
+router.post("/blogs/contact", verifyJWT_js_1.VerifyJWT, user_controller_js_1.PostAContactFormData);
+exports.default = router;

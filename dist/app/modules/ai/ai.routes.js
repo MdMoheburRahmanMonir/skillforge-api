@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const verifyJWT_js_1 = require("../../middlewares/verifyJWT.js");
+const ai_controller_js_1 = require("./ai.controller.js");
+const router = (0, express_1.Router)();
+router.post("/chat", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.chat);
+router.post("/chat/stream", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.streamChat);
+router.post("/generate", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.generate);
+router.get("/recommendations", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.recommendations);
+router.post("/classify", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.classify);
+exports.default = router;
