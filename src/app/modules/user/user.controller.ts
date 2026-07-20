@@ -149,19 +149,19 @@ export const getStats = async (_req: Request, res: Response) => {
             : "4.8";
 
         const monthlyEnrollments = [
-            { month: "Jan", enrollments: 420 },
-            { month: "Feb", enrollments: 580 },
-            { month: "Mar", enrollments: 710 },
-            { month: "Apr", enrollments: 890 },
-            { month: "May", enrollments: 1020 },
-            { month: "Jun", enrollments: 1180 },
+            { month: "Jan", enrollments: 50 },
+            { month: "Feb", enrollments: 70 },
+            { month: "Mar", enrollments: 30 },
+            { month: "Apr", enrollments: 129 },
+            { month: "May", enrollments: 200 },
+            { month: "Jun", enrollments: 180 },
         ];
 
         res.json({
             totalCourses,
             totalCategories: categories.length,
             averageRating,
-            totalStudents: 12500,
+            totalStudents: 659,
             monthlyEnrollments,
             categories: categories.slice(0, 8),
         });
