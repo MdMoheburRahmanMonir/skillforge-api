@@ -10,10 +10,10 @@ import {
 
 const router = Router();
 
-router.post("/chat", VerifyJWT, chat);
-router.post("/chat/stream", VerifyJWT, streamChat);
-router.post("/generate", VerifyJWT, generate);
-router.get("/recommendations", VerifyJWT, recommendations);
-router.post("/classify", VerifyJWT, classify);
+router.post("/chat", chat);
+router.post("/chat/stream", streamChat);
+router.post("/generate", generate);
+router.get("/recommendations", recommendations);
+router.post("/classify", classify);
 
 export default router;

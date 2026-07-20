@@ -10,13 +10,13 @@ router.get("/", getUsers);
 router.get("/courses", getCoursesList);
 router.get("/courses/categories", getCategories);
 router.get("/courses/stats", getStats);
-router.post("/courses", VerifyJWT, postSkillForgeData);
-router.get("/courses/my/:id", VerifyJWT, GetUserAllData);
+router.post("/courses", postSkillForgeData);
+router.get("/courses/my/:id", GetUserAllData);
 router.get("/courses/:id", GetSingleCourseData);
-router.delete("/courses/:id", VerifyJWT, DeleteSingleCourseData);
+router.delete("/courses/:id", DeleteSingleCourseData);
 router.get("/blogs", getBlogsList);
 router.get("/blogs/:slug", getSingleBlogPost);
-router.post("/blogs/contact", VerifyJWT, PostAContactFormData);
-router.post("/ai/classify", VerifyJWT, classify);
+router.post("/blogs/contact", PostAContactFormData);
+router.post("/ai/classify", classify);
 
 export default router;
