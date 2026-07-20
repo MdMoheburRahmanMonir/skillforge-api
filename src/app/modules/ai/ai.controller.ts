@@ -240,15 +240,15 @@ export const classify = async (req: Request, res: Response) => {
 
     const prompt = `Analyze this course and classify it.
 
-Title: "${title}"
-Description: "${description || ""}"
+      Title: "${title}"
+      Description: "${description || ""}"
 
-Respond with valid JSON only, exactly matching this structure — no markdown, no explanation outside the JSON:
-{
-  "category": "one of: Web Development, Data Science, AI/ML, Cloud Computing, Cybersecurity, UI/UX Design, Mobile Development, DevOps, Business, Other",
-  "level": "one of: Beginner, Intermediate, Advanced",
-  "tags": ["3-5 relevant tags as strings"]
-}`;
+      Respond with valid JSON only, exactly matching this structure — no markdown, no explanation outside the JSON:
+      {
+        "category": "one of: Web Development, Data Science, AI/ML, Cloud Computing, Cybersecurity, UI/UX Design, Mobile Development, DevOps, Business, Other",
+        "level": "one of: Beginner, Intermediate, Advanced",
+        "tags": ["3-5 relevant tags as strings"]
+      }`;
 
     const completion = await openai.chat.completions.create({
       model: MODEL,

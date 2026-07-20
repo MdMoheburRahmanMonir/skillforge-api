@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { DeleteSingleCourseData, getBlogsList, getCategories, getSingleBlogPost, GetSingleCourseData, getCoursesList, getStats, GetUserAllData, getUsers, PostAContactFormData, postSkillForgeData } from "./user.controller.js";
+import { classify } from "../ai/ai.controller.js";
 import { VerifyJWT } from "../../middlewares/verifyJWT.js";
 
 
@@ -16,5 +17,6 @@ router.delete("/courses/:id", VerifyJWT, DeleteSingleCourseData);
 router.get("/blogs", getBlogsList);
 router.get("/blogs/:slug", getSingleBlogPost);
 router.post("/blogs/contact", VerifyJWT, PostAContactFormData);
+router.post("/ai/classify", VerifyJWT, classify);
 
 export default router;

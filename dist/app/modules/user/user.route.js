@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const user_controller_js_1 = require("./user.controller.js");
+const ai_controller_js_1 = require("../ai/ai.controller.js");
 const verifyJWT_js_1 = require("../../middlewares/verifyJWT.js");
 const router = (0, express_1.Router)();
 router.get("/", user_controller_js_1.getUsers);
@@ -15,4 +16,5 @@ router.delete("/courses/:id", verifyJWT_js_1.VerifyJWT, user_controller_js_1.Del
 router.get("/blogs", user_controller_js_1.getBlogsList);
 router.get("/blogs/:slug", user_controller_js_1.getSingleBlogPost);
 router.post("/blogs/contact", verifyJWT_js_1.VerifyJWT, user_controller_js_1.PostAContactFormData);
+router.post("/ai/classify", verifyJWT_js_1.VerifyJWT, ai_controller_js_1.classify);
 exports.default = router;
